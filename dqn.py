@@ -27,6 +27,7 @@ class ReplayBuffer():
         for transition in mini_batch:
             s, a, r, s_prime, done_mask = transition
             s_lst.append(s)
+            #下面转化为列表存贮的主要原因是为了保维数一致，方便后续转化
             a_lst.append([a])
             r_lst.append([r])
             s_prime_lst.append(s_prime)
@@ -61,6 +62,7 @@ class Qnet(nn.Module):
             return out.argmax().item()
             
 def train(q, q_target, memory, optimizer):
+    #another hyper-parameter 10
     for i in range(10):
         s,a,r,s_prime,done_mask = memory.sample(batch_size)
 
@@ -91,6 +93,7 @@ def main():
         done = False
 
         while not done:
+            #避免共享内存带来的麻烦
             a = q.sample_action(torch.from_numpy(s).float(), epsilon)      
             s_prime, r, done, truncated, info = env.step(a)
             done_mask = 0.0 if done else 1.0
